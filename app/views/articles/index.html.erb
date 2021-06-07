@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Articles</title>
+  </head>
+  <body>
+    <% if @article.errors.any? %>
+      <ul>
+        <% @article.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ul>
+    <% end %>
+
+    <%= form_with scope: :article, url: {controller: "articles", action: "create"}, local: true do |f| %>
+      <p>
+        <%= f.label :url %>
+        <%= f.text_field :url%>
+      </p>
+
+      <p>
+        <%= f.submit "Check article"%>
+      </p>
+    <% end %>
+
+    <table>
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Score</th>
+          <th>Last checked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @articles.each do |article| %>
+          <tr>
+            <td><%= article.url =%></td>
+            <td><%= article.score =%></td>
+            <td><%= article.updated_at =%></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </body>
+</html>
