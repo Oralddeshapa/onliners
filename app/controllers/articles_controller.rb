@@ -1,3 +1,5 @@
+require 'judge.rb'
+
 class ArticlesController < ApplicationController
   def index
     @articles = Article.all
@@ -7,6 +9,7 @@ class ArticlesController < ApplicationController
   def create
     @article = Article.new(params.require(:article).permit(:url))
     @article.save
+
     redirect_to  root_path
   end
 end
