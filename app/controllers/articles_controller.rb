@@ -8,6 +8,8 @@ class ArticlesController < ApplicationController
 
   def create
     @article = Article.new(params.require(:article).permit(:url))
+    judge = Judge.new
+    judge.proceed(@article.url, @article.id)
     @article.save
 
     redirect_to  root_path

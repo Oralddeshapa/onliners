@@ -1,14 +1,18 @@
 require 'nokogiri'
 require 'open-uri'
+require 'json'
 require_relative 'site'
+require_relative 'comments'
+require 'faraday'
 
 class Judge
-  attr_reader :url
+  attr_reader :url, :id
 
-  def proceed(url)
+  def proceed(url, id)
     #news_view_count / news_id=""
     #unicode => URF-8
     @url = url
+    @id = id
     article = Site.new(url)
     if article.working?
       score(url)
@@ -20,61 +24,37 @@ class Judge
   private
 
   def score(url)
-    html = URI.open(url)
-    doc = Nokogiri::HTML.parse(html)
-    text = doc.at('body').text.split(",")
-    parse(text)
+    comments_url = get_comments_url(url)
+    parse(comments_url)
   end
 
-  def parse(data)
-    ammount = data.count
-    i = data.count
-    until i < 2
-      part = data[i - 1]
-      if unused_text?(part, data[i - 2])
-        data[i - 2] += part
-        data.delete(part)
-      elsif part.include?("text")
-        unicode = part.split("\"")[3]
-        decode_text(unicode)
-      end
-      i -= 1
-    end
-    out(data, "output_after.txt")
+  def parse(url)
+    html = URI.open(url)
+    doc = Nokogiri::HTML.parse(html).at('body')
+    data = JSON.parse(doc)
+    comments = Comments.new(data["comments"], id)
+    out(comments.all_comments, "output.txt")
+    top = comments.prepare_relative_comments
+    out(top, "output_after.txt")
     data
   end
 
   def out(text, name)
     output = File.open(name,'w')
     text.each do |part|
-      output.puts part
+      output.puts part.to_s
     end
     output.close
   end
 
-  def unused_text?(part, before_part)
-    if !part.include?("\":") and part.include?("\\")
-      if before_part.include?("text") or (!before_part.include?("\":") and before_part.include?("\\"))
-        true
-      end
-    else
-      false
-    end
-  end
-
-  def decode_text(text)
-    p "\u0417\u0430\u0447\u0430\u0441\u0442\u0443".encode('utf-8')
-    example =
-    text = text.gsub("\\", '_\\').split("_")
-    text.each do |word|
-      number = word[2..5]
-      word = "\u0417".gsub("\\", number)
-      #%Q{'\u#{number}'}
-    end
-    #map{|part| part = part[2..-1].reverse.concat("\u").reverse.encode('utf-8')}.join("")
+  def get_comments_url(url)
+    html = URI.open(url)
+    number = Nokogiri::HTML.parse(html).xpath('//span[@class="news_view_count"]/@news_id')
+    "https://comments.api.onliner.by/news/tech.post/" + number.first.value.to_s + "/comments?limit=9999"
   end
 end
 
 judge = Judge.new
-judge.proceed("https://comments.api.onliner.by/news/tech.post/539685/comments")
+#judge.proceed("https://comments.api.onliner.by/news/tech.post/539685/comments?limit=9999", 1)
+judge.proceed("https://tech.onliner.by/2021/06/07/prezentaciya-apple-na-wwdc-2021-rasskazyvaem-o-glavnom", 1)
 #p judge.proceed("http://www.cubecinema.com/programme")
