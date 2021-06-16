@@ -1,6 +1,4 @@
-require_relative 'comment'
-
-class Comments
+class Commentslist
    attr_reader :all_comments, :relative_comments, :id
 
    def initialize(comments, id)
@@ -8,18 +6,15 @@ class Comments
      @id = id
    end
 
-   def prepare_relative_comments
+   def top_n_comments(n)
      @relative_comments = []
      indexes = sort_by_rating
-     p indexes.count
-     count = 49
-     if all_comments.count < 50
-       count = all_comments.count - 1
+     if all_comments.count < n #if there is less then 50 comments
+       n = all_comments.count - 2
      end
-     p count
-     for i in 0..count
+     for i in 0..n
        comment = all_comments[indexes[i][0]]
-       comment = Comment.new(comment["text"], comment["author"]["name"], comment["marks"]["likes"], comment["marks"]["dislikes"], id)
+       comment = Comment.create({text:comment["text"], author:comment["author"]["name"], likes:comment["marks"]["likes"], dislikes:comment["marks"]["dislikes"], post_id:id})
        relative_comments.append comment
      end
      relative_comments

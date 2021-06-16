@@ -17,11 +17,7 @@ class Site
     elsif (400..499).include?(code)
       false
     end
-  rescue Faraday::ConnectionFailed
+  rescue
     nil
-  end
-
-  def ping
-    ((@finish - @start) * 100).to_i
   end
 end
