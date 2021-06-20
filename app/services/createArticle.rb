@@ -1,18 +1,16 @@
 class CreateArticle
-  TOP=3
+  COMMENTS_LIMIT=5
 
   def call(article_params)
     @article = Article.new(article_params)
-    if Article.where(url: @article.url).count != 0
+    old_article = Article.where(url: @article.url)
+    if old_article.present?
       message = "Reanalizing this url :D"
-      @article = Article.where(url: @article.url)[0]
+      @article = old_article[0]
       @article.touch
-      @article.comments.each do |comment|
-        comment.destroy
-      end
+      @article.comments.destroy_all
     else
       message = "Article was successfully created and now being analized :D"
-      res = Faraday.get @article.url
       @article.save
     end
     attach_comments
@@ -30,18 +28,18 @@ class CreateArticle
   end
 
   def comments_url(site_url)
-    html = URI.open(site_url)
+    response = Faraday.get site_url
+    html = response.body
     number = Nokogiri::HTML.parse(html).xpath('//span[@class="news_view_count"]/@news_id')
     "https://comments.api.onliner.by/news/tech.post/" + number.first.value.to_s + "/comments?limit=9999"
   end
 
   def save_comments(sorted_array)
-    count = TOP
-    if sorted_array.count < count #if there is less then TOP comments
-      count = sorted_array.count - 2
+    count = COMMENTS_LIMIT
+    if sorted_array.count < count
+      count = sorted_array.count - 1 # Cause last comment is numeric data not a comment
     end
-    count.times do |i|
-      comment = sorted_array[i]
+    sorted_array.first(count).each do |comment|
       comment = @article.comments.create({text:comment["text"], author:comment["author"]["name"], likes:comment["marks"]["likes"], dislikes:comment["marks"]["dislikes"]})
     end
   end

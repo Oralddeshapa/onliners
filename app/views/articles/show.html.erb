@@ -31,7 +31,7 @@
         <td><%= comment.text =%></td>
         <td><%= comment.likes =%></td>
         <td><%= comment.dislikes =%></td>
-        <td><%= comment.rating == nil ? 'Processing' : (comment.rating >= 0? (comment.rating > 0? 'Positive' : 'Neutral') : 'Negative') =%></td>
+        <td><%= comment.rating == nil ? 'Processing' : rating(comment) =%></td>
       </tr>
     <% end %>
   </tbody>
