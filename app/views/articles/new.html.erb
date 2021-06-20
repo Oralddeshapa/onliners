@@ -1,10 +1,10 @@
-<%= form_with scope: :article, url: {controller: "articles", action: "create"}, local: true do |f| %>
+<%= form_with scope: :article, url: { controller: "articles", action: "create" }, local: true do |f| %>
   <p>
     <%= f.label :url %>
-    <%= f.text_field :url%>
+    <%= f.text_field :url %>
   </p>
 
   <p>
-    <%= f.submit "Check article"%>
+    <%= f.submit "Check article" %>
   </p>
 <% end %>
