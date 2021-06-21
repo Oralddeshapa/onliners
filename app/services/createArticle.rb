@@ -1,23 +1,30 @@
 class CreateArticle
+  include ActiveModel::Validations
   COMMENTS_LIMIT=5
 
   def call(article_params)
     @article = Article.new(article_params)
     old_article = Article.where(url: @article.url)
-    if old_article.present?
-      message = "Reanalizing this url :D"
-      @article = old_article[0]
-      @article.touch
-      @article.comments.destroy_all
+    if @article.url.include?('onliner')
+      if old_article.present?
+        message = "Reanalizing this url :D"
+        @article = old_article[0]
+        @article.touch
+        @article.comments.destroy_all
+      else
+        message = "Article was successfully created and now being analized :D"
+        @article.save
+      end
+      attach_comments
+      ArticleWorker.perform_async(@article.id)
+      true
     else
-      message = "Article was successfully created and now being analized :D"
-      @article.save
+      errors.add(:article, "Site support only onliner articles")
+      false
     end
-    attach_comments
-    ArticleWorker.perform_async(@article.id)
-    message
   rescue Faraday::ConnectionFailed, URI::InvalidURIError
-    "SHOCK URL NE URL D:"
+    errors.add(:article, "URL is not valid")
+    false
   end
 
   def attach_comments
