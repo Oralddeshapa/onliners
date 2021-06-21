@@ -9,10 +9,12 @@ class ArticlesController < ApplicationController
   end
 
   def create
-    ca = CreateArticle.new
-    corrrect =  ca.call(article_params)
+    ca = CreateArticle.new(article_params)
+    corrrect =  ca.call
     if !corrrect
-      flash[:error] = ca.errors.full_messages[0]
+      ca.errors.full_messages.each do |message|
+        flash[:error] = message
+      end
     end
     redirect_to  root_path
   end

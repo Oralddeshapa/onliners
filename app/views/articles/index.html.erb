@@ -15,10 +15,10 @@
   <tbody>
     <% @articles.each do |article| %>
       <tr>
-        <td><%= article.url =%></td>
-        <td><%= article.score ? article.score : 'Processing' =%></td>
-        <td><%= article.updated_at =%></td>
-        <td><%= link_to 'Show', article_path(article.id) =%></td>
+        <td><%= article.url %></td>
+        <td><%= article.score ? article.score : 'Processing' %></td>
+        <td><%= article.updated_at %></td>
+        <td><%= link_to 'Show', article_path(article.id) %></td>
       </tr>
     <% end %>
   </tbody>

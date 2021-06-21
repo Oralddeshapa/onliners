@@ -2,17 +2,23 @@ class CreateArticle
   include ActiveModel::Validations
   COMMENTS_LIMIT=5
 
-  def call(article_params)
-    @article = Article.new(article_params)
-    old_article = Article.where(url: @article.url)
-    if @article.url.include?('onliner')
+  def self.call(article_params)
+    new(article_params).call
+  end
+
+  def initialize(article_params)
+    @article_params = article_params
+  end
+
+  def call
+    @article = Article.new(@article_params)
+    old_article = Article.find_by(url: @article.url)
+    if @article.valid?
       if old_article.present?
-        message = "Reanalizing this url :D"
-        @article = old_article[0]
+        @article = old_article
         @article.touch
         @article.comments.destroy_all
       else
-        message = "Article was successfully created and now being analized :D"
         @article.save
       end
       attach_comments

@@ -8,9 +8,9 @@
   </thead>
   <tbody>
       <tr>
-        <td><%= @article.url =%></td>
-        <td><%= @article.score =%></td>
-        <td><%= @article.updated_at =%></td>
+        <td><%= @article.url %></td>
+        <td><%= @article.score %></td>
+        <td><%= @article.updated_at %></td>
       </tr>
   </tbody>
 </table>
@@ -27,11 +27,11 @@
   <tbody>
     <% @comments.each do |comment|%>
       <tr>
-        <td><%= comment.author =%></td>
-        <td><%= comment.text =%></td>
-        <td><%= comment.likes =%></td>
-        <td><%= comment.dislikes =%></td>
-        <td><%= comment.rating == nil ? 'Processing' : rating(comment) =%></td>
+        <td><%= comment.author %></td>
+        <td><%= comment.text %></td>
+        <td><%= comment.likes %></td>
+        <td><%= comment.dislikes %></td>
+        <td><%= comment.rating == nil ? 'Processing' : rating(comment) %></td>
       </tr>
     <% end %>
   </tbody>
