@@ -12,9 +12,7 @@ class ArticlesController < ApplicationController
     ca = CreateArticle.new(article_params)
     corrrect =  ca.call
     if !corrrect
-      ca.errors.full_messages.each do |message|
-        flash[:error] = message
-      end
+      flash[:error] = ca.errors.full_messages.to_sentence
     end
     redirect_to  root_path
   end

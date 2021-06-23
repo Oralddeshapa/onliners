@@ -12,15 +12,10 @@ class CreateArticle
 
   def call
     @article = Article.new(@article_params)
-    old_article = Article.find_by(url: @article.url)
+    old_article = Article.find_by(url: @article.url) || Article.new(@article_params)
     if @article.valid?
-      if old_article.present?
-        @article = old_article
-        @article.touch
-        @article.comments.destroy_all
-      else
-        @article.save
-      end
+      @article.comments.destroy_all
+      @article.save
       attach_comments
       ArticleWorker.perform_async(@article.id)
       true
