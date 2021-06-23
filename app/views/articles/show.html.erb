@@ -1,0 +1,38 @@
+<table>
+  <thead>
+    <tr>
+      <th>URL</th>
+      <th>Score</th>
+      <th>Last checked</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><%= @article.url %></td>
+        <td><%= @article.score %></td>
+        <td><%= @article.updated_at %></td>
+      </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>author</th>
+      <th>text</th>
+      <th>likes</th>
+      <th>dislikes</th>
+      <th>rating</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @comments.each do |comment|%>
+      <tr>
+        <td><%= comment.author %></td>
+        <td><%= comment.text %></td>
+        <td><%= comment.likes %></td>
+        <td><%= comment.dislikes %></td>
+        <td><%= comment.rating == nil ? 'Processing' : rating(comment) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
